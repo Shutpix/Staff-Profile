@@ -1,30 +1,31 @@
 import { z } from "zod";
 
-// This schema validates the staff profile form
+// Schema for validating staff profile form
 export const staffSchema = z.object({
-  // Text fields that must not be empty
+  // Required text fields
   staffCode: z.string().min(1, "Staff Code is required"),
   firstName: z.string().min(1, "First Name is required"),
   lastName: z.string().min(1, "Last Name is required"),
 
-  // Email must be valid format like test@example.com
+  // Must be a valid email format
   email: z.string().email("Please enter a valid email address"),
 
-  // Phone must be at least 10 characters
+  // Phone number must be at least 10 digits
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
 
-  // Dropdown for gender must match one of the allowed values
+  // Gender must be one of the allowed options
   gender: z.enum(["Male", "Female", "Other"], {
     errorMap: () => ({ message: "Please select a gender" }),
   }),
 
-  // Other dropdowns / required fields
+  // Dropdown fields (must not be empty)
   status: z.string().min(1, "Please select a status"),
   workplace: z.string().min(1, "Workplace is required"),
   jobPosition: z.string().min(1, "Job Position is required"),
   academicLevel: z.string().min(1, "Please select an academic level"),
+  maritalStatus: z.string().min(1, "Please select marital status"),
 
-  // Convert string to number and check if it's valid
+  // Hourly rate: must be a valid number >= 0
   hourlyRate: z
     .string()
     .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
@@ -32,15 +33,14 @@ export const staffSchema = z.object({
     })
     .transform((val) => Number(val)),
 
-  // Required birthday as string (from date input)
+  // Birthday (as date string)
   birthday: z.string().min(1, "Please enter your birthday"),
 
-  // More required fields
+  // Other required fields
   religion: z.string().min(1, "Religion is required"),
   nation: z.string().min(1, "Nation is required"),
-  maritalStatus: z.string().min(1, "Please select marital status"),
 
-  // File validations
+  // File uploads (profile picture and signature)
   profilePicture: z
     .any()
     .refine((file) => file instanceof File, {
